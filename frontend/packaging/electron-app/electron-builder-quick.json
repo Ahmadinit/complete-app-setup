@@ -1,0 +1,45 @@
+{
+    "appId": "com.psi.forecast.system",
+    "productName": "PSI Forecast System",
+    "directories": {
+        "output": "dist",
+        "buildResources": "build"
+    },
+    "files": [
+        "main.js",
+        "preload.js",
+        "package.json"
+    ],
+    "extraResources": [
+        {
+            "from": "resources/backend",
+            "to": "backend",
+            "filter": ["**/*"]
+        },
+        {
+            "from": "resources/app",
+            "to": "app",
+            "filter": ["**/*"]
+        },
+        {
+            "from": "resources/data",
+            "to": "data",
+            "filter": ["**/*"]
+        }
+    ],
+    "mac": {
+        "category": "public.app-category.business",
+        "target": [
+            {
+                "target": "dir",
+                "arch": ["arm64"]
+            }
+        ],
+        "identity": null,
+        "hardenedRuntime": false,
+        "gatekeeperAssess": false,
+        "entitlements": "entitlements.mac.plist",
+        "entitlementsInherit": "entitlements.mac.plist",
+        "type": "distribution"
+    }
+}
