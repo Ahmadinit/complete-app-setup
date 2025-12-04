@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: './',  // Use relative paths for Electron
+  base: '/',  // Use absolute paths for web hosting
   server: {
     port: 5173,
     host: true,
