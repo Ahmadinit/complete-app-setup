@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 import sys
+from config import settings
 
 # Determine if running as bundled executable (PyInstaller)
 if getattr(sys, 'frozen', False):
@@ -21,22 +22,26 @@ if getattr(sys, 'frozen', False):
     db_path = os.path.join(data_dir, 'psi.db')
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 else:
-    # Running as script (development)
-    # Database URL - using SQLite for development
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/psi.db"
-    # For production, you might use: 
-    # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/psi_db"
+    # Running as script (development or production)
+    # Use environment variable for DATABASE_URL if available (production)
+    # Otherwise use SQLite for local development
+    SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/psi.db")
+    
+    # If using SQLite, create data directory
+    if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(current_dir, "data")
+        os.makedirs(data_dir, exist_ok=True)
 
-    # Create data directory if it doesn't exist
-    # Get the directory where this file is located
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(current_dir, "data")
-    os.makedirs(data_dir, exist_ok=True)
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # Needed for SQLite
-)
+# Configure engine based on database type
+if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, 
+        connect_args={"check_same_thread": False}
+    )
+else:
+    # PostgreSQL or other databases
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -12,20 +12,19 @@ async def startup_event():
     create_tables()
 
 # CORS setup to allow requests from frontend
-# In production (Electron), allow file:// protocol and localhost
-origins = [
-    "http://localhost:5173",  # Vite dev server
-    "http://127.0.0.1:8000",  # Backend itself
-    "file://",                 # Electron file:// protocol
-    "app://",                  # Electron app:// protocol
-]
+import os
+
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:8000,file://,app://"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # Allow all origins for Electron app
+    allow_origins=allowed_origins if os.getenv("ALLOWED_ORIGINS") else ["*"],
     allow_credentials=True,
-    allow_methods=["*"],       # allow GET, POST, PUT, DELETE, OPTIONS
-    allow_headers=["*"],       # allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Register Routers
