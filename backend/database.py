@@ -24,8 +24,9 @@ if getattr(sys, 'frozen', False):
 else:
     # Running as script (development or production)
     # Use environment variable for DATABASE_URL if available (production)
-    # Otherwise use SQLite for local development
-    SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/psi.db")
+    # For Fly.io and other deployments, check for mounted volume
+    db_path = os.getenv("DATABASE_URL", "/data/psi.db" if os.path.exists("/data") else "./data/psi.db")
+    SQLALCHEMY_DATABASE_URL = db_path if db_path.startswith("postgresql") else f"sqlite:///{db_path}"
     
     # If using SQLite, create data directory
     if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
