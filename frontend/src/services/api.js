@@ -1,8 +1,11 @@
 // Complete API service for all modules
 import axios from "axios";
 
+// Use environment variable or fallback to production URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://psi-backend.fly.dev";
+
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
